@@ -1,5 +1,5 @@
-# How to adding/modifying actions
-## Update 'config.yml' to add new upstream repo or update commit hash
+# How to add/modify actions
+## Update 'config.yml' to add new upstream repo or update new commit hash
 
 The `config.yml` file contains the mapping of upstream actions repositories and their corresponding commit hashes that we track. To add a new repository or update an existing one:
 
