@@ -1,0 +1,45 @@
+description: Setup a Go environment and add it to the PATH
+inputs:
+  architecture:
+    description: 'Target architecture for Go to use. Examples: x86, x64. Will use
+      system architecture by default.'
+  cache:
+    default: true
+    description: Used to specify whether caching is needed. Set to true, if you'd
+      like to enable caching.
+  cache-dependency-path:
+    description: Used to specify the path to a dependency file - go.sum
+  check-latest:
+    default: false
+    description: Set this option to true if you want the action to always check for
+      the latest available version that satisfies the version spec
+  go-version:
+    description: The Go version to download (if necessary) and use. Supports semver
+      spec and ranges. Be sure to enclose this option in single quotation marks.
+  go-version-file:
+    description: Path to the go.mod or go.work file.
+  token:
+    default: ${{ github.server_url == 'https://github.com' && github.token || '' }}
+    description: Used to pull Go distributions from go-versions. Since there's a default,
+      this is typically not supplied by the user. When running this action on github.com,
+      the default value is sufficient. When running on GHES, you can pass a personal
+      access token for github.com if you are experiencing rate limiting.
+name: Setup Go environment
+outputs:
+  cache-hit:
+    value: ${{ steps.upstream.outputs.cache-hit }}
+  go-version:
+    value: ${{ steps.upstream.outputs.go-version }}
+runs:
+  steps:
+  - id: upstream
+    uses: actions/setup-go@f111f3307d8850f501ac008e886eec1fd1932a34
+    with:
+      architecture: ${{inputs.architecture}}
+      cache: ${{inputs.cache}}
+      cache-dependency-path: ${{inputs.cache-dependency-path}}
+      check-latest: ${{inputs.check-latest}}
+      go-version: ${{inputs.go-version}}
+      go-version-file: ${{inputs.go-version-file}}
+      token: ${{inputs.token}}
+  using: composite

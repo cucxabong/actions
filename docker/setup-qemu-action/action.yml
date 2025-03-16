@@ -1,0 +1,27 @@
+description: Install QEMU static binaries
+inputs:
+  cache-image:
+    default: 'true'
+    description: Cache binfmt image to GitHub Actions cache backend
+    required: false
+  image:
+    default: docker.io/tonistiigi/binfmt:latest
+    description: QEMU static binaries Docker image (e.g. tonistiigi/binfmt:latest)
+    required: false
+  platforms:
+    default: all
+    description: Platforms to install (e.g. arm64,riscv64,arm)
+    required: false
+name: Docker Setup QEMU
+outputs:
+  platforms:
+    value: ${{ steps.upstream.outputs.platforms }}
+runs:
+  steps:
+  - id: upstream
+    uses: docker/setup-qemu-action@29109295f81e9208d7d86ff1c6c12d2833863392
+    with:
+      cache-image: ${{inputs.cache-image}}
+      image: ${{inputs.image}}
+      platforms: ${{inputs.platforms}}
+  using: composite

@@ -1,0 +1,43 @@
+description: Logs in the local Docker client to one or more Amazon ECR Private registries
+  or an Amazon ECR Public registry
+inputs:
+  http-proxy:
+    description: Proxy to use for the AWS SDK agent.
+    required: false
+  mask-password:
+    default: 'true'
+    description: 'Mask the docker password to prevent it being printed to action logs
+      if debug logging is enabled. NOTE: This will prevent the Docker password output
+      from being shared between separate jobs. Options: [''true'', ''false'']'
+    required: false
+  registries:
+    description: A comma-delimited list of AWS account IDs that are associated with
+      the ECR Private registries. If you do not specify a registry, the default ECR
+      Private registry is assumed. If 'public' is given as input to 'registry-type',
+      this input is ignored.
+    required: false
+  registry-type:
+    default: private
+    description: 'Which ECR registry type to log into. Options: [private, public]'
+    required: false
+  skip-logout:
+    default: 'false'
+    description: 'Whether to skip explicit logout of the registries during post-job
+      cleanup. Exists for backward compatibility on self-hosted runners. Not recommended.
+      Options: [''true'', ''false'']'
+    required: false
+name: Amazon ECR "Login" Action for GitHub Actions
+outputs:
+  registry:
+    value: ${{ steps.upstream.outputs.registry }}
+runs:
+  steps:
+  - id: upstream
+    uses: aws-actions/amazon-ecr-login@062b18b96a7aff071d4dc91bc00c4c1a7945b076
+    with:
+      http-proxy: ${{inputs.http-proxy}}
+      mask-password: ${{inputs.mask-password}}
+      registries: ${{inputs.registries}}
+      registry-type: ${{inputs.registry-type}}
+      skip-logout: ${{inputs.skip-logout}}
+  using: composite

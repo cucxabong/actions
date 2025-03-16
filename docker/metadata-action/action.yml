@@ -1,0 +1,75 @@
+description: GitHub Action to extract metadata (tags, labels) for Docker
+inputs:
+  annotations:
+    description: List of custom annotations
+    required: false
+  bake-target:
+    description: Bake target name (default docker-metadata-action)
+    required: false
+  context:
+    default: workflow
+    description: Where to get context data. Allowed options are "workflow"  (default),
+      "git".
+    required: true
+  flavor:
+    description: Flavors to apply
+    required: false
+  github-token:
+    default: ${{ github.token }}
+    description: GitHub Token as provided by secrets
+    required: true
+  images:
+    description: List of Docker images to use as base name for tags
+    required: false
+  labels:
+    description: List of custom labels
+    required: false
+  sep-annotations:
+    description: Separator to use for annotations output (default \n)
+    required: false
+  sep-labels:
+    description: Separator to use for labels output (default \n)
+    required: false
+  sep-tags:
+    description: Separator to use for tags output (default \n)
+    required: false
+  tags:
+    description: List of tags as key-value pair attributes
+    required: false
+name: Docker Metadata action
+outputs:
+  annotations:
+    value: ${{ steps.upstream.outputs.annotations }}
+  bake-file:
+    value: ${{ steps.upstream.outputs.bake-file }}
+  bake-file-annotations:
+    value: ${{ steps.upstream.outputs.bake-file-annotations }}
+  bake-file-labels:
+    value: ${{ steps.upstream.outputs.bake-file-labels }}
+  bake-file-tags:
+    value: ${{ steps.upstream.outputs.bake-file-tags }}
+  json:
+    value: ${{ steps.upstream.outputs.json }}
+  labels:
+    value: ${{ steps.upstream.outputs.labels }}
+  tags:
+    value: ${{ steps.upstream.outputs.tags }}
+  version:
+    value: ${{ steps.upstream.outputs.version }}
+runs:
+  steps:
+  - id: upstream
+    uses: docker/metadata-action@902fa8ec7d6ecbf8d84d538b9b233a880e428804
+    with:
+      annotations: ${{inputs.annotations}}
+      bake-target: ${{inputs.bake-target}}
+      context: ${{inputs.context}}
+      flavor: ${{inputs.flavor}}
+      github-token: ${{inputs.github-token}}
+      images: ${{inputs.images}}
+      labels: ${{inputs.labels}}
+      sep-annotations: ${{inputs.sep-annotations}}
+      sep-labels: ${{inputs.sep-labels}}
+      sep-tags: ${{inputs.sep-tags}}
+      tags: ${{inputs.tags}}
+  using: composite

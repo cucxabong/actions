@@ -1,0 +1,168 @@
+description: Pulumi's GitHub Actions deploy apps and infrastructure to your cloud
+  of choice, using just your favorite language and GitHub.
+inputs:
+  always-include-summary:
+    default: 'false'
+    description: If comments must be trimmed, trim them from the front. This ensures
+      the resources summary is always included in the comment
+    required: false
+  cloud-url:
+    description: A cloud URL to log in to
+    required: false
+  color:
+    default: auto
+    description: 'Colorize output. Choices are: always, never, raw, auto'
+    required: false
+  command:
+    description: Pulumi command to run, eg. up
+    required: false
+  comment-on-pr:
+    default: 'false'
+    description: If true, a comment will be created with results
+    required: false
+  comment-on-pr-number:
+    description: Overrides the PR used to comment on
+    required: false
+  comment-on-summary:
+    default: 'false'
+    description: If true, a comment on the GitHub step summary will be created
+    required: false
+  config-map:
+    description: Config to use during the operations
+    required: false
+  continue-on-error:
+    default: 'false'
+    description: Continue running the update even if an error is encountered
+    required: false
+  diff:
+    default: 'false'
+    description: Display operation as a rich diff showing the overall change
+    required: false
+  edit-pr-comment:
+    default: 'true'
+    description: Edit previous PR comment instead of posting new one
+    required: false
+  exclude-protected:
+    default: 'false'
+    description: Skip destroying protected resources. Only valid when command is destroy.
+    required: false
+  expect-no-changes:
+    default: 'false'
+    description: Return an error if any changes occur during this update
+    required: false
+  github-token:
+    default: ${{ github.token }}
+    description: Github Token
+    required: false
+  message:
+    description: Optional message to associate with the update operation
+    required: false
+  parallel:
+    description: Allow P resource operations to run in parallel at once (1 for no
+      parallelism). Defaults to unbounded.
+    required: false
+  plan:
+    description: Where to either save an Update Plan or read an Update Plan from
+    required: false
+  policyPackConfigs:
+    description: Path to JSON file containing the config for the policy pack of the
+      corresponding "--policy-pack" flag.
+    required: false
+  policyPacks:
+    description: Run one or more policy packs as part of this update.
+    required: false
+  pulumi-version:
+    description: Install a specific version of the Pulumi CLI
+    required: false
+  pulumi-version-file:
+    description: 'File containing the version of the Pulumi CLI to install. Example:
+      .pulumi.version'
+    required: false
+  refresh:
+    default: 'false'
+    description: Execute the operation with the `--refresh` option
+    required: false
+  remove:
+    default: 'false'
+    description: Delete the stack after a destroy operation
+    required: false
+  replace:
+    description: Specify resources to replace. Multiple resources can be specified
+      one per line
+    required: false
+  secrets-provider:
+    description: 'The type of the provider that should be used to encrypt and decrypt
+      secrets. Possible choices: default, passphrase, awskms, azurekeyvault, gcpkms,
+      hashivault'
+    required: false
+  stack-name:
+    description: Which stack you want to apply to, eg. dev
+    required: false
+  suppress-outputs:
+    default: 'false'
+    description: Suppress display of stack outputs (in case they contain sensitive
+      values).
+    required: false
+  suppress-progress:
+    default: 'false'
+    description: Suppress display of periodic progress dots to limit logs length
+    required: false
+  target:
+    description: Specify a single resource URN to update. Other resources will not
+      be updated. Multiple resources can be specified one per line
+    required: false
+  target-dependents:
+    default: 'false'
+    description: Allows updating of dependent targets discovered but not specified
+      in target.
+    required: false
+  upsert:
+    default: 'false'
+    description: Create the stack if it currently does not exist
+    required: false
+  work-dir:
+    default: ./
+    description: Location of your Pulumi files. Defaults to ./
+    required: false
+name: Pulumi CLI Action
+outputs:
+  output:
+    value: ${{ steps.upstream.outputs.output }}
+runs:
+  steps:
+  - id: upstream
+    uses: pulumi/actions@9519177da243fd32cab35cdbf19cce1ab7472fcc
+    with:
+      always-include-summary: ${{inputs.always-include-summary}}
+      cloud-url: ${{inputs.cloud-url}}
+      color: ${{inputs.color}}
+      command: ${{inputs.command}}
+      comment-on-pr: ${{inputs.comment-on-pr}}
+      comment-on-pr-number: ${{inputs.comment-on-pr-number}}
+      comment-on-summary: ${{inputs.comment-on-summary}}
+      config-map: ${{inputs.config-map}}
+      continue-on-error: ${{inputs.continue-on-error}}
+      diff: ${{inputs.diff}}
+      edit-pr-comment: ${{inputs.edit-pr-comment}}
+      exclude-protected: ${{inputs.exclude-protected}}
+      expect-no-changes: ${{inputs.expect-no-changes}}
+      github-token: ${{inputs.github-token}}
+      message: ${{inputs.message}}
+      parallel: ${{inputs.parallel}}
+      plan: ${{inputs.plan}}
+      policyPackConfigs: ${{inputs.policyPackConfigs}}
+      policyPacks: ${{inputs.policyPacks}}
+      pulumi-version: ${{inputs.pulumi-version}}
+      pulumi-version-file: ${{inputs.pulumi-version-file}}
+      refresh: ${{inputs.refresh}}
+      remove: ${{inputs.remove}}
+      replace: ${{inputs.replace}}
+      secrets-provider: ${{inputs.secrets-provider}}
+      stack-name: ${{inputs.stack-name}}
+      suppress-outputs: ${{inputs.suppress-outputs}}
+      suppress-progress: ${{inputs.suppress-progress}}
+      target: ${{inputs.target}}
+      target-dependents: ${{inputs.target-dependents}}
+      upsert: ${{inputs.upsert}}
+      work-dir: ${{inputs.work-dir}}
+  using: composite

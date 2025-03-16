@@ -1,0 +1,93 @@
+description: Set up Docker Buildx
+inputs:
+  append:
+    description: Append additional nodes to the builder
+    required: false
+  buildkitd-config:
+    description: BuildKit daemon config file
+    required: false
+  buildkitd-config-inline:
+    description: Inline BuildKit daemon config
+    required: false
+  buildkitd-flags:
+    description: BuildKit daemon flags
+    required: false
+  cache-binary:
+    default: 'true'
+    description: Cache buildx binary to GitHub Actions cache backend
+    required: false
+  cleanup:
+    default: 'true'
+    description: Cleanup temp files and remove builder at the end of a job
+    required: false
+  config:
+    deprecationMessage: Use buildkitd-config instead
+    description: BuildKit daemon config file
+    required: false
+  config-inline:
+    deprecationMessage: Use buildkitd-config-inline instead
+    description: Inline BuildKit daemon config
+    required: false
+  driver:
+    default: docker-container
+    description: Sets the builder driver to be used
+    required: false
+  driver-opts:
+    description: List of additional driver-specific options. (eg. image=moby/buildkit:master)
+    required: false
+  endpoint:
+    description: Optional address for docker socket or context from `docker context
+      ls`
+    required: false
+  install:
+    default: 'false'
+    description: Sets up docker build command as an alias to docker buildx build
+    required: false
+  platforms:
+    description: Fixed platforms for current node. If not empty, values take priority
+      over the detected ones
+    required: false
+  use:
+    default: 'true'
+    description: Switch to this builder instance
+    required: false
+  version:
+    description: Buildx version. (eg. v0.3.0)
+    required: false
+name: Docker Setup Buildx
+outputs:
+  driver:
+    value: ${{ steps.upstream.outputs.driver }}
+  endpoint:
+    value: ${{ steps.upstream.outputs.endpoint }}
+  flags:
+    value: ${{ steps.upstream.outputs.flags }}
+  name:
+    value: ${{ steps.upstream.outputs.name }}
+  nodes:
+    value: ${{ steps.upstream.outputs.nodes }}
+  platforms:
+    value: ${{ steps.upstream.outputs.platforms }}
+  status:
+    value: ${{ steps.upstream.outputs.status }}
+runs:
+  steps:
+  - id: upstream
+    uses: docker/setup-buildx-action@b5ca514318bd6ebac0fb2aedd5d36ec1b5c232a2
+    with:
+      append: ${{inputs.append}}
+      buildkitd-config: ${{inputs.buildkitd-config}}
+      buildkitd-config-inline: ${{inputs.buildkitd-config-inline}}
+      buildkitd-flags: ${{inputs.buildkitd-flags}}
+      cache-binary: ${{inputs.cache-binary}}
+      cleanup: ${{inputs.cleanup}}
+      config: ${{inputs.config}}
+      config-inline: ${{inputs.config-inline}}
+      driver: ${{inputs.driver}}
+      driver-opts: ${{inputs.driver-opts}}
+      endpoint: ${{inputs.endpoint}}
+      install: ${{inputs.install}}
+      platforms: ${{inputs.platforms}}
+      use: ${{inputs.use}}
+      version: ${{inputs.version}}
+  using: composite

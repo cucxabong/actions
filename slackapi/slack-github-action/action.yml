@@ -1,0 +1,69 @@
+description: Send data to Slack to start a Slack workflow in Workflow Builder, call
+  a Slack API method, or post a message into a channel
+inputs:
+  errors:
+    default: 'false'
+    description: If the step exits with an error on errors or continues.
+    required: false
+  method:
+    description: The Slack API method to call.
+    required: false
+  payload:
+    description: Attributes that create the content of the request using JSON or YAML.
+    required: false
+  payload-delimiter:
+    description: Field seperator for nested attributes in the input payload.
+    required: false
+  payload-file-path:
+    description: Path to a file containing a valid input payload made of JSON or YAML.
+    required: false
+  payload-templated:
+    default: 'false'
+    description: If templated variables in input payloads should be replaced.
+    required: false
+  proxy:
+    description: An optional proxied route for HTTPS connections.
+    required: false
+  retries:
+    default: '5'
+    description: The strategy to use when performing retried requests.
+  token:
+    description: The authentication value used with the Slack API.
+    required: false
+  webhook:
+    description: A location for posting request payloads.
+    required: false
+  webhook-type:
+    description: Option to use either an incoming webhook or webhook trigger.
+    required: false
+name: 'Slack: Send to Slack'
+outputs:
+  channel_id:
+    value: ${{ steps.upstream.outputs.channel_id }}
+  ok:
+    value: ${{ steps.upstream.outputs.ok }}
+  response:
+    value: ${{ steps.upstream.outputs.response }}
+  thread_ts:
+    value: ${{ steps.upstream.outputs.thread_ts }}
+  time:
+    value: ${{ steps.upstream.outputs.time }}
+  ts:
+    value: ${{ steps.upstream.outputs.ts }}
+runs:
+  steps:
+  - id: upstream
+    uses: slackapi/slack-github-action@485a9d42d3a73031f12ec201c457e2162c45d02d
+    with:
+      errors: ${{inputs.errors}}
+      method: ${{inputs.method}}
+      payload: ${{inputs.payload}}
+      payload-delimiter: ${{inputs.payload-delimiter}}
+      payload-file-path: ${{inputs.payload-file-path}}
+      payload-templated: ${{inputs.payload-templated}}
+      proxy: ${{inputs.proxy}}
+      retries: ${{inputs.retries}}
+      token: ${{inputs.token}}
+      webhook: ${{inputs.webhook}}
+      webhook-type: ${{inputs.webhook-type}}
+  using: composite
