@@ -98,3 +98,7 @@ jobs:
 
       - run: go mod download
 ```
+
+# Limitations
+
+* Composite actions will not work with dynamic outputs. If [downstream workflows need outputs from actions that uses](https://github.com/orgs/community/discussions/10529) `core.setOutput` to set dynamic outputs based on runtime configuration and is not well defined in upstream actions's `action.yml`, please use upstream actions directly.
