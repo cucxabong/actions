@@ -9,7 +9,7 @@ from pathlib import Path
 @dataclass
 class UpstreamRepo:
     repo: str
-    commit: str  # Changed to str since commits are typically hex strings
+    commit: str
     dest: Optional[str] = field(default=None)
 
     def __post_init__(self) -> None:
@@ -21,6 +21,7 @@ class UpstreamRepo:
 @dataclass
 class Config:
     upstreams: List[UpstreamRepo]
+    excluded: List[str]
 
 
 def ensure_folder_exists(folder_path: str) -> Path:
@@ -57,7 +58,7 @@ def load_config(file_path: str) -> Config:
             data = yaml.safe_load(file)
 
         upstream_list = [UpstreamRepo(**entry) for entry in data.get("upstreams", [])]
-        return Config(upstreams=upstream_list)
+        return Config(upstreams=upstream_list, excluded=data.get("excluded", []))
     except FileNotFoundError:
         raise FileNotFoundError(f"Config file not found: {file_path}")
     except yaml.YAMLError as e:
@@ -186,8 +187,12 @@ def main() -> None:
     CONFIG_FILE = "config.yml"
     try:
         config_data = load_config(CONFIG_FILE)
+        excluded = config_data.excluded
         for entry in config_data.upstreams:
-            create_local_composite_action(entry)
+            if entry.repo not in excluded:
+                create_local_composite_action(entry)
+            else:
+                print(f"[WARN] Skipping {entry.repo}")
     except Exception as e:
         print(f"Error: {e}")
         exit(1)
