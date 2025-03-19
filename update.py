@@ -10,13 +10,16 @@ from pathlib import Path
 class UpstreamRepo:
     repo: str
     commit: str
+    sub_path: Optional[str] = field(default="")
     dest: Optional[str] = field(default=None)
 
     def __post_init__(self) -> None:
         """Set 'dest' to repo name if not provided."""
         if self.dest is None:
             self.dest = self.repo
-
+        parts = self.repo.split("/")
+        self.repo = "/".join(parts[:2])
+        self.sub_path = "/".join(parts[2:])
 
 @dataclass
 class Config:
@@ -65,7 +68,7 @@ def load_config(file_path: str) -> Config:
         raise yaml.YAMLError(f"Error parsing YAML file: {e}")
 
 
-def download_file(repo: str, commit: str, file_name: str = "action.yml") -> Dict[str, Any]:
+def download_file(repo: str, commit: str, sub_folder: str = "", file_name: str = "action.yml") -> Dict[str, Any]:
     """
     Downloads a file from a GitHub repository.
 
@@ -80,11 +83,17 @@ def download_file(repo: str, commit: str, file_name: str = "action.yml") -> Dict
     Raises:
         requests.exceptions.RequestException: If download fails
     """
-    raw_url = f"https://raw.githubusercontent.com/{repo}/{commit}/{file_name}"
+    raw_url = os.path.join("https://raw.githubusercontent.com", repo, commit, sub_folder, file_name)
 
-    print(f"Fetching {raw_url}")
-    response = requests.get(raw_url, timeout=30)
-    response.raise_for_status()
+    try:
+        print(f"Fetching {raw_url}")
+        response = requests.get(raw_url, timeout=30)
+        response.raise_for_status()
+    except:
+        raw_url = os.path.join("https://raw.githubusercontent.com", repo, commit, sub_folder,"action.yaml")
+        print(f"Retrying fetching {raw_url}")
+        response = requests.get(raw_url, timeout=30)
+        response.raise_for_status()
 
     return yaml.safe_load(response.text)
 
@@ -157,7 +166,7 @@ def create_local_composite_action(upstream: UpstreamRepo) -> None:
         upstream: UpstreamRepo configuration
     """
     try:
-        upstream_action_config = download_file(upstream.repo, upstream.commit)
+        upstream_action_config = download_file(upstream.repo, upstream.commit, upstream.sub_path)
 
         # Extract and process data
         action_data = extract_action_data(upstream_action_config)
@@ -196,7 +205,6 @@ def main() -> None:
     except Exception as e:
         print(f"Error: {e}")
         exit(1)
-
 
 if __name__ == "__main__":
     main()
